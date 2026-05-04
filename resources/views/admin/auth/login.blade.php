@@ -46,10 +46,7 @@
                                         <button class="btn btn-primary waves-effect waves-light" type="submit">Kirish</button>
                                     </div>
 
-                                    <div class="mt-4 bot-note">
-                                        Super admin: <strong>admin@maktabbot.uz</strong> / <strong>secret123</strong><br>
-                                        School admin: <strong>admin@quva-ideal.uz</strong> / <strong>secret123</strong>
-                                    </div>
+                            
                                 </form>
                             </div>
                         </div>
