@@ -71,6 +71,12 @@
                                     <div class="col-md-6"><div class="mb-3"><label class="form-label">Webhook URL</label><input class="form-control" value="{{ $schoolBot->webhook_url ?: $resolvedWebhookUrl ?: 'Bot token saqlangandan keyin hosil bo`ladi' }}" readonly></div></div>
                                 </div>
 
+                                <div class="mb-3">
+                                    <label class="form-label">Admin Telegram ID</label>
+                                    <input class="form-control" name="telegram_id" value="{{ old('telegram_id', $currentUser->telegram_id) }}" placeholder="Masalan: 123456789">
+                                    <small class="text-muted">Test e`lon yuborish uchun shu adminning Telegram ID sini saqlang va botga `/start` yuboring.</small>
+                                </div>
+
                                 <div class="row">
                                     <div class="col-md-6"><div class="mb-3"><label class="form-label">Bot username</label><input class="form-control" name="bot_username" value="{{ old('bot_username', $schoolBot->bot_username) }}"></div></div>
                                     <div class="col-md-6"><div class="mb-3"><label class="form-label">Asosiy kanal</label><input class="form-control" name="main_channel" value="{{ old('main_channel', $schoolBot->main_channel) }}"></div></div>

@@ -28,6 +28,7 @@ class SettingsController extends Controller
         return view('admin.settings.edit', [
             'schoolModel' => $school,
             'schoolBot' => $schoolBot,
+            'currentUser' => request()->user(),
             'resolvedWebhookUrl' => $this->resolveWebhookUrl($schoolBot->exists ? $schoolBot : null),
             'availableSchools' => $this->schoolContext->schools(request()->user()),
             'currentSchool' => $school,
@@ -51,6 +52,10 @@ class SettingsController extends Controller
             'email' => $data['email'] ?? null,
             'director_name' => $data['director_name'] ?? null,
             'is_active' => $request->boolean('is_active', true),
+        ]);
+
+        $request->user()->update([
+            'telegram_id' => $data['telegram_id'] ?? null,
         ]);
 
         $bot = $school->bot()->updateOrCreate(

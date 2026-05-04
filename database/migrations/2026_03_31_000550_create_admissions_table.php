@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('school_id')->constrained('schools')->cascadeOnDelete();
             $table->foreignId('created_by')->constrained('users');
             $table->string('title');
-            $table->integer('academic_year');
+            $table->string('academic_year', 20);
             $table->json('target_classes');
             $table->json('admission_options')->nullable();
             $table->text('description')->nullable();

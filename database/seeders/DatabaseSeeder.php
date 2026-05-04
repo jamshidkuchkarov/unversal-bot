@@ -100,7 +100,7 @@ class DatabaseSeeder extends Seeder
             'title' => '2026-2027 o`quv yili qabuli',
         ], [
             'created_by' => $superAdmin->id,
-            'academic_year' => 2026,
+            'academic_year' => '2026-2027',
             'target_classes' => [1, 5, 10],
             'start_date' => now()->toDateString(),
             'end_date' => now()->addDays(30)->toDateString(),

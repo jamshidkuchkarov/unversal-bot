@@ -145,11 +145,15 @@ class AnnouncementController extends Controller
         // Find admin's telegram user
         $telegramUser = TelegramUser::query()
             ->where('school_id', $announcement->school_id)
-            ->where('telegram_id', $admin->telegram_id ?? null)
+            ->where('telegram_id', $admin->telegram_id)
             ->first();
 
+        if (!$admin->telegram_id) {
+            return back()->with('error', 'Test yuborish uchun avval sozlamalarda Telegram ID ni saqlang.');
+        }
+
         if (!$telegramUser) {
-            return back()->with('error', 'Sizning Telegram akkauntingiz topilmadi. Avval botga /start yuboring.');
+            return back()->with('error', 'Telegram akkauntingiz topilmadi. Avval botga /start yuboring yoki Telegram ID ni tekshiring.');
         }
 
         try {
@@ -166,12 +170,12 @@ class AnnouncementController extends Controller
                 $mediaPath = storage_path('app/public/' . $firstMedia);
 
                 if (file_exists($mediaPath)) {
-                    $this->telegramBotService->sendPhoto(
+                    $this->sendAnnouncementMedia(
+                        $announcement,
                         $telegramUser->chat_id,
                         $mediaPath,
                         $text,
-                        $replyMarkup,
-                        $announcement->school->bot
+                        $replyMarkup
                     );
                 } else {
                     $this->telegramBotService->sendMessage(
@@ -194,6 +198,16 @@ class AnnouncementController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Xatolik: ' . $e->getMessage());
         }
+    }
+
+    private function sendAnnouncementMedia(Announcement $announcement, string|int $chatId, string $mediaPath, string $text, array $replyMarkup): void
+    {
+        match ($announcement->media_type) {
+            'video' => $this->telegramBotService->sendVideo($chatId, $mediaPath, $text, $replyMarkup, $announcement->school->bot),
+            'document' => $this->telegramBotService->sendDocument($chatId, $mediaPath, $text, $replyMarkup, $announcement->school->bot),
+            'animation' => $this->telegramBotService->sendAnimation($chatId, $mediaPath, $text, $replyMarkup, $announcement->school->bot),
+            default => $this->telegramBotService->sendPhoto($chatId, $mediaPath, $text, $replyMarkup, $announcement->school->bot),
+        };
     }
 
     private function parseCsv(?string $value): array

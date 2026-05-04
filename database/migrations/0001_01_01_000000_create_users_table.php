@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('telegram_id')->nullable()->unique();
             $table->string('password');
             $table->enum('role', ['super_admin', 'school_admin'])->default('school_admin');
             $table->boolean('is_active')->default(true);

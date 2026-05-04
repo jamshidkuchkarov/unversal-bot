@@ -110,17 +110,16 @@ class SendAnnouncementJob implements ShouldQueue
 
             if (file_exists($mediaPath)) {
                 try {
-                    $telegramBotService->sendPhoto(
+                    $this->sendMedia(
+                        $telegramBotService,
                         $user->chat_id,
                         $mediaPath,
                         $text,
-                        $replyMarkup,
-                        $this->announcement->school->bot
+                        $replyMarkup
                     );
                     return;
                 } catch (\Exception $e) {
-                    // If photo fails, send as text instead
-                    Log::warning('Failed to send photo, sending as text', [
+                    Log::warning('Failed to send media, sending as text', [
                         'announcement_id' => $this->announcement->id,
                         'user_id' => $user->id,
                         'error' => $e->getMessage(),
@@ -158,17 +157,16 @@ class SendAnnouncementJob implements ShouldQueue
 
             if (file_exists($mediaPath)) {
                 try {
-                    $telegramBotService->sendPhoto(
+                    $this->sendMedia(
+                        $telegramBotService,
                         $chatId,
                         $mediaPath,
                         $text,
-                        $replyMarkup,
-                        $this->announcement->school->bot
+                        $replyMarkup
                     );
                     return;
                 } catch (\Exception $e) {
-                    // If photo fails, send as text instead
-                    Log::warning('Failed to send photo to channel, sending as text', [
+                    Log::warning('Failed to send media to channel, sending as text', [
                         'announcement_id' => $this->announcement->id,
                         'error' => $e->getMessage(),
                     ]);
@@ -182,5 +180,20 @@ class SendAnnouncementJob implements ShouldQueue
             $replyMarkup,
             $this->announcement->school->bot
         );
+    }
+
+    private function sendMedia(
+        TelegramBotService $telegramBotService,
+        string|int $chatId,
+        string $mediaPath,
+        string $text,
+        array $replyMarkup
+    ): void {
+        match ($this->announcement->media_type) {
+            'video' => $telegramBotService->sendVideo($chatId, $mediaPath, $text, $replyMarkup, $this->announcement->school->bot),
+            'document' => $telegramBotService->sendDocument($chatId, $mediaPath, $text, $replyMarkup, $this->announcement->school->bot),
+            'animation' => $telegramBotService->sendAnimation($chatId, $mediaPath, $text, $replyMarkup, $this->announcement->school->bot),
+            default => $telegramBotService->sendPhoto($chatId, $mediaPath, $text, $replyMarkup, $this->announcement->school->bot),
+        };
     }
 }

@@ -38,6 +38,51 @@ class TelegramBotService
         $this->api($schoolBot)->sendPhoto($payload);
     }
 
+    public function sendVideo(string|int $chatId, string $videoPath, string $caption = '', ?array $replyMarkup = null, ?SchoolBot $schoolBot = null): void
+    {
+        $payload = [
+            'chat_id' => $chatId,
+            'video' => fopen($videoPath, 'r'),
+            'caption' => $caption,
+        ];
+
+        if ($replyMarkup) {
+            $payload['reply_markup'] = json_encode($replyMarkup, JSON_UNESCAPED_UNICODE);
+        }
+
+        $this->api($schoolBot)->sendVideo($payload);
+    }
+
+    public function sendDocument(string|int $chatId, string $documentPath, string $caption = '', ?array $replyMarkup = null, ?SchoolBot $schoolBot = null): void
+    {
+        $payload = [
+            'chat_id' => $chatId,
+            'document' => fopen($documentPath, 'r'),
+            'caption' => $caption,
+        ];
+
+        if ($replyMarkup) {
+            $payload['reply_markup'] = json_encode($replyMarkup, JSON_UNESCAPED_UNICODE);
+        }
+
+        $this->api($schoolBot)->sendDocument($payload);
+    }
+
+    public function sendAnimation(string|int $chatId, string $animationPath, string $caption = '', ?array $replyMarkup = null, ?SchoolBot $schoolBot = null): void
+    {
+        $payload = [
+            'chat_id' => $chatId,
+            'animation' => fopen($animationPath, 'r'),
+            'caption' => $caption,
+        ];
+
+        if ($replyMarkup) {
+            $payload['reply_markup'] = json_encode($replyMarkup, JSON_UNESCAPED_UNICODE);
+        }
+
+        $this->api($schoolBot)->sendAnimation($payload);
+    }
+
     public function getChatMember(string $chatId, string|int $userId, ?SchoolBot $schoolBot = null): mixed
     {
         return $this->api($schoolBot)->getChatMember([

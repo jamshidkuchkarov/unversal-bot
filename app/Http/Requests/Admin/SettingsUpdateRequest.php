@@ -22,6 +22,7 @@ class SettingsUpdateRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email'],
             'director_name' => ['nullable', 'string', 'max:255'],
+            'telegram_id' => ['nullable', 'string', 'max:255'],
             'welcome_text' => ['nullable', 'string'],
             'main_menu_text' => ['nullable', 'string'],
             'bot_token' => ['nullable', 'string'],

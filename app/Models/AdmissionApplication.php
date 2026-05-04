@@ -27,6 +27,8 @@ class AdmissionApplication extends Model
         'documents',
         'status',
         'admin_notes',
+        'reviewed_at',
+        'reviewed_by',
     ];
 
     protected function casts(): array
@@ -34,6 +36,7 @@ class AdmissionApplication extends Model
         return [
             'student_birth_date' => 'date',
             'documents' => 'array',
+            'reviewed_at' => 'datetime',
         ];
     }
 
@@ -49,6 +52,6 @@ class AdmissionApplication extends Model
 
     public function telegramUser(): BelongsTo
     {
-        return $this->belongsTo(TelegramUser::class);
+        return $this->belongsTo(TelegramUser::class, 'telegram_user_id', 'telegram_id');
     }
 }
