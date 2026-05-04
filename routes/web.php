@@ -28,6 +28,8 @@ Route::post('/telegram/webhook/{schoolBot}', TelegramWebhookController::class)->
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/', DashboardController::class)->name('dashboard');
+    Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::get('/school-info', [SchoolInfoController::class, 'edit'])->name('school-info.edit');

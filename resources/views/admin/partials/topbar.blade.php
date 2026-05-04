@@ -81,6 +81,10 @@
                         <small class="text-muted">Admin</small>
                     </div>
                     <div class="dropdown-divider"></div>
+                    <a href="{{ route('admin.profile.edit') }}" class="dropdown-item">
+                        <i class="bx bx-user font-size-16 align-middle me-1"></i> Profil
+                    </a>
+                    <div class="dropdown-divider"></div>
                     <form method="post" action="{{ route('admin.logout') }}">
                         @csrf
                         <button type="submit" class="dropdown-item text-danger">
