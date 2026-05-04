@@ -47,7 +47,7 @@ class SchoolAdminController extends Controller
         SchoolAdmin::query()->create([
             'user_id' => $user->id,
             'school_id' => $school->id,
-            'permissions' => $request->input('permissions', []),
+            'permissions' => [],
         ]);
 
         return redirect()->route('admin.schools.admins.index', $school)
@@ -84,7 +84,7 @@ class SchoolAdminController extends Controller
 
         if ($schoolAdmin) {
             $schoolAdmin->update([
-                'permissions' => $request->input('permissions', []),
+                'permissions' => [],
             ]);
         }
 

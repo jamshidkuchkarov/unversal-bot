@@ -21,8 +21,6 @@ class SchoolAdminRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
             'password' => [$isUpdate ? 'nullable' : 'required', 'string', 'min:6'],
-            'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['string'],
             'is_active' => ['nullable', 'boolean'],
         ];
     }

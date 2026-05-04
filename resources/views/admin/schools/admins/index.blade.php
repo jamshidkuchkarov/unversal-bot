@@ -17,7 +17,6 @@
                         <tr>
                             <th>Ism</th>
                             <th>Email</th>
-                            <th>Ruxsatlar</th>
                             <th>Holat</th>
                             <th class="text-end">Amallar</th>
                         </tr>
@@ -27,20 +26,6 @@
                         <tr>
                             <td>{{ $admin->name }}</td>
                             <td><code>{{ $admin->email }}</code></td>
-                            <td>
-                                @php
-                                    $permissions = is_string($admin->pivot->permissions)
-                                        ? json_decode($admin->pivot->permissions, true)
-                                        : $admin->pivot->permissions;
-                                @endphp
-                                @if($permissions && is_array($permissions) && count($permissions) > 0)
-                                    @foreach($permissions as $perm)
-                                        <span class="badge bg-info">{{ $perm }}</span>
-                                    @endforeach
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
                             <td>
                                 <span class="badge {{ $admin->is_active ? 'bg-success' : 'bg-secondary' }}">
                                     {{ $admin->is_active ? 'Faol' : 'Nofaol' }}
@@ -56,7 +41,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-center text-muted">Adminlar yo`q.</td></tr>
+                        <tr><td colspan="4" class="text-center text-muted">Adminlar yo`q.</td></tr>
                     @endforelse
                     </tbody>
                 </table>

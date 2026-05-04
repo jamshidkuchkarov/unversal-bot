@@ -58,33 +58,9 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Ruxsatlar</label>
-                        <div class="row">
-                            @php
-                                $availablePermissions = [
-                                    'olympiad' => 'Olimpiadalar',
-                                    'vacancy' => 'Vakansiyalar',
-                                    'admission' => 'Qabul',
-                                    'announcement' => 'E`lonlar',
-                                    'channel' => 'Kanallar',
-                                    'settings' => 'Sozlamalar',
-                                ];
-                                $pivotPermissions = $admin?->schools()->where('school_id', $school->id)->first()?->pivot->permissions;
-                                if (is_string($pivotPermissions)) {
-                                    $pivotPermissions = json_decode($pivotPermissions, true);
-                                }
-                                $currentPermissions = old('permissions', $pivotPermissions ?? []);
-                            @endphp
-                            @foreach($availablePermissions as $key => $label)
-                                <div class="col-md-4">
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $key }}" id="perm_{{ $key }}" @checked(in_array($key, $currentPermissions))>
-                                        <label class="form-check-label" for="perm_{{ $key }}">{{ $label }}</label>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                    <div class="alert alert-info">
+                        <i class="bx bx-info-circle me-2"></i>
+                        Maktab admini o'z maktabining barcha bo'limlarini (olimpiadalar, vakansiyalar, qabul, e'lonlar, kanallar, sozlamalar) boshqarishi mumkin.
                     </div>
 
                     <div class="mt-4">
