@@ -34,6 +34,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/school-info', [SchoolInfoController::class, 'update'])->name('school-info.update');
     Route::delete('/school-info/gallery', [SchoolInfoController::class, 'deleteGalleryImage'])->name('school-info.gallery.delete');
     Route::resource('schools', SchoolController::class)->except('show');
+    Route::resource('schools.admins', \App\Http\Controllers\Admin\SchoolAdminController::class)->except('show');
     Route::resource('vacancies', VacancyController::class)->except('show');
     Route::get('/vacancy-applications', [\App\Http\Controllers\Admin\VacancyApplicationController::class, 'index'])->name('vacancy-applications.index');
     Route::get('/vacancy-applications/export', [\App\Http\Controllers\Admin\VacancyApplicationController::class, 'export'])->name('vacancy-applications.export');

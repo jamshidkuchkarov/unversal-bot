@@ -22,9 +22,10 @@
                             <td>{{ trim(($school->city ?? '').' '.($school->district ?? '')) }}</td>
                             <td><span class="badge {{ $school->is_active ? 'bg-success' : 'bg-secondary' }}">{{ $school->is_active ? 'Faol' : 'Nofaol' }}</span></td>
                             <td class="text-end">
+                                <a href="{{ route('admin.schools.admins.index', $school) }}" class="btn btn-sm btn-info">Adminlar</a>
                                 <a href="{{ route('admin.settings.edit', ['school_id' => $school->id]) }}" class="btn btn-sm btn-primary">Bot sozlamalari</a>
                                 <a href="{{ route('admin.schools.edit', $school) }}" class="btn btn-sm btn-light">Tahrirlash</a>
-                                <form class="d-inline" method="post" action="{{ route('admin.schools.destroy', $school) }}">@csrf @method('delete')<button class="btn btn-sm btn-danger" type="submit">O`chirish</button></form>
+                                <form class="d-inline" method="post" action="{{ route('admin.schools.destroy', $school) }}" onsubmit="return confirm('Rostdan ham o`chirmoqchimisiz?')">@csrf @method('delete')<button class="btn btn-sm btn-danger" type="submit">O`chirish</button></form>
                             </td>
                         </tr>
                     @empty
