@@ -107,6 +107,16 @@ class TelegramBotService
         ]);
     }
 
+    /**
+     * @throws TelegramSDKException
+     */
+    public function getMe(SchoolBot $schoolBot): array
+    {
+        $response = $this->api($schoolBot)->getMe();
+
+        return $response->toArray();
+    }
+
     public function api(?SchoolBot $schoolBot = null): Api
     {
         $token = $schoolBot?->bot_token ?: config('telegram.bots.mybot.token');

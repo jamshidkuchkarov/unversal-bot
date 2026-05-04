@@ -17,7 +17,16 @@ class SchoolAdminController extends Controller
     {
         abort_unless(request()->user()->isSuperAdmin(), 403);
 
-        $admins = $school->admins()->withPivot('id', 'permissions')->paginate(10);
+        $query = $school->admins()->withPivot('id', 'permissions');
+
+        if ($search = request('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $admins = $query->paginate(10)->withQueryString();
 
         return view('admin.schools.admins.index', compact('school', 'admins'));
     }

@@ -67,8 +67,29 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6"><div class="mb-3"><label class="form-label">Bot token</label><input class="form-control" name="bot_token" value="{{ old('bot_token', $schoolBot->bot_token) }}"></div></div>
-                                    <div class="col-md-6"><div class="mb-3"><label class="form-label">Webhook URL</label><input class="form-control" value="{{ $schoolBot->webhook_url ?: $resolvedWebhookUrl ?: 'Bot token saqlangandan keyin hosil bo`ladi' }}" readonly></div></div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Bot token</label>
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" name="bot_token" id="bot_token" value="{{ old('bot_token', $schoolBot->bot_token) }}" placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz">
+                                                <button class="btn btn-outline-secondary" type="button" id="toggleToken">
+                                                    <i class="bx bx-show" id="toggleIcon"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">@BotFather dan olingan token. Xavfsizlik uchun yashirilgan.</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Webhook URL</label>
+                                            <input class="form-control" value="{{ $schoolBot->webhook_url ?: $resolvedWebhookUrl ?: 'Bot token saqlangandan keyin hosil bo`ladi' }}" readonly>
+                                            @if($schoolBot->exists && $schoolBot->bot_token)
+                                                <button type="button" class="btn btn-sm btn-info mt-2" id="testWebhook">
+                                                    <i class="bx bx-test-tube me-1"></i> Webhook ni test qilish
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
@@ -105,4 +126,54 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Token ko'rsatish/yashirish
+        document.getElementById('toggleToken')?.addEventListener('click', function() {
+            const tokenInput = document.getElementById('bot_token');
+            const icon = document.getElementById('toggleIcon');
+
+            if (tokenInput.type === 'password') {
+                tokenInput.type = 'text';
+                icon.classList.remove('bx-show');
+                icon.classList.add('bx-hide');
+            } else {
+                tokenInput.type = 'password';
+                icon.classList.remove('bx-hide');
+                icon.classList.add('bx-show');
+            }
+        });
+
+        // Webhook test
+        document.getElementById('testWebhook')?.addEventListener('click', async function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Test qilinmoqda...';
+
+            try {
+                const response = await fetch('{{ route("admin.settings.test-webhook") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Webhook test muvaffaqiyatli!\n\n' + (data.message || 'Bot ishlayapti.'));
+                } else {
+                    alert('❌ Webhook test muvaffaqiyatsiz!\n\n' + (data.message || 'Xatolik yuz berdi.'));
+                }
+            } catch (error) {
+                alert('❌ Xatolik: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    </script>
 @endsection

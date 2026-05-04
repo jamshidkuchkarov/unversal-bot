@@ -14,8 +14,19 @@ class SchoolController extends Controller
     {
         abort_unless(request()->user()->isSuperAdmin(), 403);
 
+        $query = School::query();
+
+        if ($search = request('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('district', 'like', "%{$search}%");
+            });
+        }
+
         return view('admin.schools.index', [
-            'schools' => School::query()->latest()->paginate(10),
+            'schools' => $query->latest()->paginate(10)->withQueryString(),
         ]);
     }
 

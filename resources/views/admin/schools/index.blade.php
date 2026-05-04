@@ -11,7 +11,29 @@
                 'action' => '<a href="'.route('admin.schools.create').'" class="btn btn-primary waves-effect waves-light">Maktab qo`shish</a>',
             ])
             @include('admin.partials.flash')
-            <div class="card"><div class="card-body"><div class="table-responsive">
+            <div class="card">
+                <div class="card-body">
+                    <form method="get" class="mb-3">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <input type="text" name="search" class="form-control" placeholder="Maktab nomi, slug, shahar yoki tuman bo'yicha qidirish..." value="{{ request('search') }}">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bx bx-search me-1"></i> Qidirish
+                                </button>
+                            </div>
+                        </div>
+                        @if(request('search'))
+                            <div class="mt-2">
+                                <a href="{{ route('admin.schools.index') }}" class="btn btn-sm btn-light">
+                                    <i class="bx bx-x me-1"></i> Tozalash
+                                </a>
+                                <span class="text-muted ms-2">Topildi: {{ $schools->total() }} ta</span>
+                            </div>
+                        @endif
+                    </form>
+                    <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light"><tr><th>Nomi</th><th>Slug</th><th>Hudud</th><th>Holat</th><th class="text-end">Amallar</th></tr></thead>
                     <tbody>

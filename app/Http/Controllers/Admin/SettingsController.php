@@ -8,6 +8,7 @@ use App\Models\SchoolBot;
 use App\Support\AdminSchoolContext;
 use App\Services\Telegram\TelegramBotService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 
@@ -94,6 +95,41 @@ class SettingsController extends Controller
         }
 
         return back()->with('status', $status);
+    }
+
+    public function testWebhook(): JsonResponse
+    {
+        $school = $this->schoolContext->current(request()->user());
+
+        if (! $school || ! $school->bot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maktab yoki bot topilmadi.',
+            ]);
+        }
+
+        $bot = $school->bot;
+
+        if (! $bot->bot_token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bot token kiritilmagan.',
+            ]);
+        }
+
+        try {
+            $result = $this->telegramBotService->getMe($bot);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Bot ishlayapti!\n\nBot nomi: {$result['first_name']}\nUsername: @{$result['username']}",
+            ]);
+        } catch (TelegramSDKException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Xatolik: ' . $exception->getMessage(),
+            ]);
+        }
     }
 
     private function resolveWebhookUrl(?SchoolBot $schoolBot): ?string

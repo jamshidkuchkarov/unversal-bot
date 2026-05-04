@@ -32,6 +32,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/test-webhook', [SettingsController::class, 'testWebhook'])->name('settings.test-webhook');
     Route::get('/school-info', [SchoolInfoController::class, 'edit'])->name('school-info.edit');
     Route::put('/school-info', [SchoolInfoController::class, 'update'])->name('school-info.update');
     Route::delete('/school-info/gallery', [SchoolInfoController::class, 'deleteGalleryImage'])->name('school-info.gallery.delete');
