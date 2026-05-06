@@ -62,12 +62,13 @@ class OlympiadRegistrationController extends Controller
 
         $registrations = $registrationsQuery->paginate(20)->withQueryString();
         $statusCounts = (clone $registrationsQuery)
+            ->reorder()
             ->selectRaw('status, COUNT(*) as total')
             ->groupBy('status')
             ->pluck('total', 'status');
 
         $summary = [
-            'total' => (clone $registrationsQuery)->count(),
+            'total' => (clone $registrationsQuery)->reorder()->count(),
             'confirmed' => (int) ($statusCounts['confirmed'] ?? 0),
             'participated' => (int) ($statusCounts['participated'] ?? 0),
             'absent' => (int) ($statusCounts['absent'] ?? 0),
