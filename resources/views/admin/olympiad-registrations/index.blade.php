@@ -60,8 +60,8 @@
                     @if ($selectedOlympiad)
                         <div class="alert alert-info">
                             Ko`rilayotgan olimpiada: <strong>{{ $selectedOlympiad->title }}</strong>
-                            @if($selectedOlympiad->subject)
-                                • {{ $selectedOlympiad->subject }}
+                            @if($selectedOlympiad->subjects && count($selectedOlympiad->subjects) > 0)
+                                • Fanlar: {{ implode(', ', $selectedOlympiad->subjects) }}
                             @endif
                             @if($selectedOlympiad->target_classes)
                                 • Sinflar: {{ implode(', ', $selectedOlympiad->target_classes) }}-sinf
@@ -113,6 +113,7 @@
                                         <tr>
                                             <th>Ishtirokchi</th>
                                             <th>Olimpiada</th>
+                                            <th>Fan</th>
                                             <th>Sinf</th>
                                             <th>Telefon</th>
                                             <th>Tuman / shahar</th>
@@ -130,9 +131,13 @@
                                                 <div class="fw-semibold">{{ $registration->full_name }}</div>
                                                 <div class="text-muted small">{{ $registration->created_at?->format('d.m.Y H:i') }}</div>
                                             </td>
+                                            <td>{{ $registration->olympiad?->title ?? '-' }}</td>
                                             <td>
-                                                <div>{{ $registration->olympiad?->title ?? '-' }}</div>
-                                                <div class="text-muted small">{{ $registration->olympiad?->subject ?? '' }}</div>
+                                                @if($registration->subject)
+                                                    <span class="badge bg-info">{{ $registration->subject }}</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                             <td>{{ trim(collect([$registration->class_number, $registration->class_letter])->filter()->implode(' ')) ?: '-' }}</td>
                                             <td>{{ $registration->phone }}</td>
@@ -169,7 +174,7 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr><td colspan="10" class="text-center text-muted py-4">Mos arizalar topilmadi.</td></tr>
+                                        <tr><td colspan="11" class="text-center text-muted py-4">Mos arizalar topilmadi.</td></tr>
                                     @endforelse
                                     </tbody>
                                 </table>

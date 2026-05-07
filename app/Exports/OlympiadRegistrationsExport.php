@@ -42,7 +42,7 @@ class OlympiadRegistrationsExport implements FromQuery, WithHeadings, WithMappin
         return [
             $registration->id,
             $registration->olympiad?->title ?? '-',
-            $registration->olympiad?->subject ?? '-',
+            $registration->subject ?? '-',
             $registration->full_name,
             trim(collect([$registration->class_number, $registration->class_letter])->filter()->implode(' ')) ?: '-',
             $registration->phone,
