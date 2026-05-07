@@ -19,7 +19,21 @@
                                 @if($olympiad->exists) @method('put') @endif
                                 <div class="row">
                                     <div class="col-md-6"><div class="mb-3"><label class="form-label">Sarlavha</label><input class="form-control" name="title" value="{{ old('title', $olympiad->title) }}" required></div></div>
-                                    <div class="col-md-6"><div class="mb-3"><label class="form-label">Fan</label><input class="form-control" name="subject" value="{{ old('subject', $olympiad->subject) }}"></div></div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Fanlar</label>
+                                            <input
+                                                class="form-control @error('subjects') is-invalid @enderror"
+                                                name="subjects"
+                                                value="{{ old('subjects', implode(', ', $olympiad->subjects ?? [])) }}"
+                                                placeholder="Masalan: Matematika, Fizika, Kimyo"
+                                            >
+                                            <small class="text-muted">Fanlarni vergul bilan ajrating. Masalan: Matematika, Fizika, Kimyo</small>
+                                            @error('subjects')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="mb-3"><label class="form-label">Tavsif</label><textarea class="form-control" name="description" rows="6">{{ old('description', $olympiad->description) }}</textarea></div>
                                 <div class="row">

@@ -15,6 +15,7 @@ class OlympiadRegistration extends Model
         'bot_session_id',
         'telegram_user_id',
         'full_name',
+        'subject',
         'class_number',
         'class_letter',
         'phone',

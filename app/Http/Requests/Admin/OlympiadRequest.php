@@ -15,7 +15,7 @@ class OlympiadRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'subject' => ['nullable', 'string', 'max:255'],
+            'subjects' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
             'target_classes' => ['required', 'string', 'regex:/^\d+(,\s*\d+)*$/'],
             'min_age' => ['nullable', 'integer', 'min:1'],

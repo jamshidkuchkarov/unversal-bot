@@ -13,7 +13,7 @@ class Olympiad extends Model
         'school_id',
         'created_by',
         'title',
-        'subject',
+        'subjects',
         'description',
         'cover_image',
         'target_classes',
@@ -36,6 +36,7 @@ class Olympiad extends Model
     protected function casts(): array
     {
         return [
+            'subjects' => 'array',
             'target_classes' => 'array',
             'registration_start' => 'datetime',
             'registration_end' => 'datetime',

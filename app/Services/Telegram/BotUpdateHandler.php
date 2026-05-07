@@ -308,11 +308,74 @@ class BotUpdateHandler
             }
 
             $session->update([
-                'state' => 'olympiad.district',
+                'state' => 'olympiad.subject_selection',
                 'data' => array_merge($session->data ?? [], [
                     'olympiad_id' => $olympiad->id,
                     'class_number' => (int) $classNumber,
                     'class_letter' => null,
+                ]),
+            ]);
+
+            // Get subjects from olympiad
+            $subjects = $olympiad->subjects ?? [];
+
+            if (empty($subjects)) {
+                // If no subjects defined, skip to district
+                $session->update([
+                    'state' => 'olympiad.district',
+                    'data' => array_merge($session->data ?? [], ['subject' => null]),
+                ]);
+
+                $this->telegramBotService->sendMessage(
+                    $user->chat_id,
+                    "📍 Tuman yoki shaharni kiriting.",
+                    null,
+                    $schoolBot
+                );
+                return;
+            }
+
+            // Build subject keyboard from olympiad subjects
+            $subjectKeyboard = [];
+            foreach (array_chunk($subjects, 2) as $chunk) {
+                $row = [];
+                foreach ($chunk as $subject) {
+                    $row[] = [
+                        'text' => $subject,
+                        'callback_data' => 'olympiad_subject:'.$olympiad->id.':'.urlencode($subject),
+                    ];
+                }
+                $subjectKeyboard[] = $row;
+            }
+
+            $subjectKeyboard[] = [
+                ['text' => '⬅️ Orqaga', 'callback_data' => 'olympiads_back'],
+            ];
+
+            $this->telegramBotService->sendMessage(
+                $user->chat_id,
+                "📚 Qaysi fan bo'yicha ishtirok etasiz?",
+                ['inline_keyboard' => $subjectKeyboard],
+                $schoolBot
+            );
+            return;
+        }
+
+        if (str_starts_with((string) $callback->data, 'olympiad_subject:')) {
+            [$prefix, $olympiadId, $subject] = array_pad(explode(':', (string) $callback->data, 3), 3, null);
+            $olympiad = Olympiad::query()->where('school_id', $schoolBot->school_id)->find((int) $olympiadId);
+
+            if (! $olympiad || ! $subject) {
+                return;
+            }
+
+            $subject = urldecode($subject);
+
+            $session->update([
+                'state' => 'olympiad.district',
+                'data' => array_merge($session->data ?? [], [
+                    'olympiad_id' => $olympiad->id,
+                    'subject' => $subject,
                 ]),
             ]);
 
@@ -471,6 +534,7 @@ class BotUpdateHandler
             'olympiad.school_name_custom' => $this->advanceSessionWithContactRequest($session, ['school_name_custom' => $text], 'olympiad.phone', '📱 Telefon raqamingizni yuboring.', $user->chat_id, $schoolBot),
             'olympiad.phone' => $this->handleOlympiadPhoneStep($session, $text, $user, $schoolBot),
             'olympiad.class_selection' => $this->remindOlympiadClassSelection($user->chat_id, $schoolBot),
+            'olympiad.subject_selection' => $this->remindOlympiadSubjectSelection($user->chat_id, $schoolBot),
             'admission.student_full_name' => $this->handleAdmissionStudentNameStep($session, $text, $user->chat_id, $schoolBot),
             'admission.target_class' => $this->remindAdmissionClassSelection($user->chat_id, $schoolBot),
             'admission.education_language' => $this->remindAdmissionLanguageSelection($user->chat_id, $schoolBot),
@@ -577,6 +641,7 @@ class BotUpdateHandler
             'school_id' => $schoolBot->school_id,
             'bot_session_id' => $session->id,
             'full_name' => $data['full_name'],
+            'subject' => $data['subject'] ?? null,
             'class_number' => $data['class_number'],
             'class_letter' => $data['class_letter'],
             'phone' => $data['phone'],
@@ -587,7 +652,14 @@ class BotUpdateHandler
         ]);
 
         $session->update(['state' => 'idle', 'data' => []]);
-        $this->telegramBotService->sendMessage($user->chat_id, 'Olimpiada uchun ro`yxatdan o`tdingiz.', $this->mainMenu($schoolBot), $schoolBot);
+
+        $subjectText = isset($data['subject']) ? "\n📚 Fan: {$data['subject']}" : '';
+        $this->telegramBotService->sendMessage(
+            $user->chat_id,
+            "✅ Olimpiada uchun ro`yxatdan o`tdingiz!{$subjectText}\n🏫 Sinf: {$data['class_number']}-sinf",
+            $this->mainMenu($schoolBot),
+            $schoolBot
+        );
 
         return true;
     }
@@ -837,8 +909,8 @@ class BotUpdateHandler
             '🏆 '.$olympiad->title,
         ];
 
-        if (filled($olympiad->subject)) {
-            $lines[] = '📚 Fan: '.$olympiad->subject;
+        if (! empty($olympiad->subjects)) {
+            $lines[] = '📚 Fanlar: '.collect($olympiad->subjects)->implode(', ');
         }
 
         if (! empty($olympiad->target_classes)) {
@@ -1751,6 +1823,18 @@ class BotUpdateHandler
         $this->telegramBotService->sendMessage(
             $chatId,
             "⬇️ Iltimos, sinfni pastdagi buttonlardan tanlang.",
+            null,
+            $schoolBot
+        );
+
+        return true;
+    }
+
+    private function remindOlympiadSubjectSelection(string $chatId, SchoolBot $schoolBot): bool
+    {
+        $this->telegramBotService->sendMessage(
+            $chatId,
+            "⬇️ Iltimos, fanni pastdagi buttonlardan tanlang.",
             null,
             $schoolBot
         );

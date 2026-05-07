@@ -28,8 +28,8 @@ class OlympiadController extends Controller
                 $query->where(function ($subQuery) use ($filters) {
                     $subQuery
                         ->where('title', 'like', "%{$filters['search']}%")
-                        ->orWhere('subject', 'like', "%{$filters['search']}%")
-                        ->orWhere('olympiad_location', 'like', "%{$filters['search']}%");
+                        ->orWhere('olympiad_location', 'like', "%{$filters['search']}%")
+                        ->orWhereJsonContains('subjects', $filters['search']);
                 });
             })
             ->when($filters['status'], fn ($query) => $query->where('status', $filters['status']))
@@ -70,6 +70,7 @@ class OlympiadController extends Controller
             ...$request->validated(),
             'school_id' => $school->id,
             'created_by' => $request->user()->id,
+            'subjects' => $this->parseCsv($request->input('subjects')),
             'target_classes' => $this->parseCsv($request->input('target_classes')),
             'is_free' => $request->boolean('is_free', true),
         ]);
@@ -90,6 +91,7 @@ class OlympiadController extends Controller
 
         $olympiad->update([
             ...$request->validated(),
+            'subjects' => $this->parseCsv($request->input('subjects')),
             'target_classes' => $this->parseCsv($request->input('target_classes')),
             'is_free' => $request->boolean('is_free', true),
         ]);
