@@ -96,6 +96,32 @@ class BotUpdateHandler
             'subscribed_at' => $user->subscribed_at ?? Carbon::now(),
         ])->save();
 
+        $menuButtons = [
+            __('bot.school_info'),
+            __('bot.vacancies'),
+            __('bot.olympiads'),
+            __('bot.admissions'),
+            __('bot.announcements'),
+            __('bot.settings'),
+        ];
+
+        if (in_array($text, $menuButtons, true)) {
+            if ($session->state !== 'idle') {
+                $session->update(['state' => 'idle', 'data' => []]);
+            }
+
+            match ($text) {
+                __('bot.school_info') => $this->showSchoolInfo($user, $schoolBot),
+                __('bot.vacancies') => $this->sendVacancies($user->chat_id, $schoolBot),
+                __('bot.olympiads') => $this->sendOlympiads($user->chat_id, $schoolBot),
+                __('bot.admissions') => $this->sendAdmissions($user->chat_id, $schoolBot),
+                __('bot.announcements') => $this->sendAnnouncements($user->chat_id, $schoolBot),
+                __('bot.settings') => $this->showSettings($user, $schoolBot),
+            };
+
+            return;
+        }
+
         // Handle file uploads for specific states
         if ($this->handleFileUpload($message, $session, $user, $schoolBot)) {
             return;
@@ -110,15 +136,7 @@ class BotUpdateHandler
             return;
         }
 
-        match ($text) {
-            __('bot.school_info') => $this->showSchoolInfo($user, $schoolBot),
-            __('bot.vacancies') => $this->sendVacancies($user->chat_id, $schoolBot),
-            __('bot.olympiads') => $this->sendOlympiads($user->chat_id, $schoolBot),
-            __('bot.admissions') => $this->sendAdmissions($user->chat_id, $schoolBot),
-            __('bot.announcements') => $this->sendAnnouncements($user->chat_id, $schoolBot),
-            __('bot.settings') => $this->showSettings($user, $schoolBot),
-            default => $this->sendMainMenu($user->chat_id, $schoolBot),
-        };
+        $this->sendMainMenu($user->chat_id, $schoolBot);
     }
 
     private function handleCallback(Update $update, SchoolBot $schoolBot): void
